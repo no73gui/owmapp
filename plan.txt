@@ -1,0 +1,32 @@
+- Utilize Pico W for low-level data collection from
+Open Weather Map API via micropython application.
+- Use a simple HTTP server in owmapp.main via Python 3
+to collect JSON payload from Pico W. The pico will
+act as an HTTP client to accomplish payload delivery
+a specific endpoint.
+
+## Step 1 (Server-Side)
+owmapp needs to listen for incoming payload. Plan to use Flask
+- install Flask via pip
+- create api.py ro setup a simple web server.
+-- this server will have a route that reveives the JSON data
+--- import os 
+--- import sys
+--- from dotenv import load_dotenv
+------after pip install flask------
+--- from flask import Flask, request, jsonify
+--- from owmapp.database import MySQLConnection
+-- load environment variables via dotenv
+-- specify the endpoint for the Pico to send data to
+---@app.route('/weather_data', methods=['POST'])
+
+in the database.py file, there needs to be a method created to
+recieve the json payload.
+
+## Step 2 (Client-Side)
+using MicroPython for the Pico, fetch JSON payload and send it to
+owmapp. 
+- Pico must be on same network as owmapp http server.
+- Pico needs to make a POST request to owmapp via urequests library
+-- disable any firewall rules that may be blocking prot 5000 on
+server side.

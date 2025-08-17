@@ -6,8 +6,17 @@
 import os
 import sys
 from dotenv import load_dotenv
-
+from flask import Flask, request, jsonify
+# Import environment variables at start for MySQL auth.
 load_dotenv('dbconfig.env')
+
+# Instantiates Flask application
+app = Flask(__name__)
+
+# Global variable for db connection
+db_connector = None
+
+# Attempt db connection on start
 try:
     print("Attempting to import MySQLConnection...")
     from owmapp.database import MySQLConnection
@@ -37,7 +46,23 @@ except ImportError as e:
 
 except Exception as e:
     print(f"An unexpected error occurred: {e}")
+    sys.exit(1)
 
+# Define endpoint for POST requests
+@app.route('/weather_data', methods=['POST'])
+def receive_weather_data():
+    """This function handles incoming HTTP POST requests with a JSON payload."""
+    if request.is_json:
+        payload = request.get_json()
+        print("Received payload: ", payload)
+        # Pass JSON to DB logic
+        try:
+            return jsonify({"status": "success", "message": "Data received and stored"})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
+    return jsonify({"status": "error", "message": "Request must be JSON"}), 400
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
 print()
 print()
 print()

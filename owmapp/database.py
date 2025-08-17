@@ -32,63 +32,59 @@ class MySQLConnection:
     def create_tables(self):
         cursor = self.connection.cursor()
         
-        # This is the correct SQL statement for the StorageLocation table
-        create_storage_table = """CREATE TABLE IF NOT EXISTS
-        StorageLocation (storageArea VARCHAR(255) PRIMARY KEY
+        create_zip_table = """CREATE TABLE IF NOT EXISTS
+        zipCodes (zipCode VARCHAR(255) PRIMARY KEY
         )
         """
-        cursor.execute(create_storage_table)
-
-        # Added the table name 'Consumables' and corrected the foreign key reference
-        create_consumables_table = """CREATE TABLE IF NOT EXISTS Consumables (
-        consumableID INT AUTO_INCREMENT PRIMARY KEY,
-        storageArea VARCHAR(255),
-        FOREIGN KEY (storageArea) REFERENCES StorageLocation(storageArea)
-        )
-        """
-        cursor.execute(create_consumables_table)
-
-        # Added the table name 'Tools' and corrected the foreign key reference
-        create_tools_table = """CREATE TABLE IF NOT EXISTS Tools (
-        toolID INT AUTO_INCREMENT PRIMARY KEY,
-        storageArea VARCHAR(255),
-        FOREIGN KEY (storageArea) REFERENCES StorageLocation(storageArea)
-        )
-        """
-        cursor.execute(create_tools_table)
+        cursor.execute(create_zip_table)
         
-        # This table must be created before Employee_Tools and Employee_Consumables
-        create_employee_table = """CREATE TABLE IF NOT EXISTS Employee (
-        employeeID INT AUTO_INCREMENT PRIMARY KEY
+        create_weather_readings_table = """CREATE TABLE IF NOT EXISTS WeatherReadings (
+        readingID INT AUTO_INCREMENT PRIMARY KEY,
+        zipCode VARCHAR(255),
+        temperature DECIMAL(5, 2),
+        humidity DECIMAL(5, 2),
+        wind_speed DECIMAL(5, 2),
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (zipCode) REFERENCES zipCodes(zipCode)
         )
         """
-        cursor.execute(create_employee_table)
-
-        # Corrected the foreign key syntax and made sure it's called after the employee and tools tables are created
-        create_employee_tools_table = """CREATE TABLE IF NOT EXISTS Employee_Tools (
-        employeeID INT,
-        toolID INT,
-        PRIMARY KEY (employeeID, toolID),
-        FOREIGN KEY (employeeID) REFERENCES Employee(employeeID),
-        FOREIGN KEY (toolID) REFERENCES Tools(toolID)
+        cursor.execute(create_weather_readings_table)# Create a separate table for severe weather events.
+        create_severe_events_table = """CREATE TABLE IF NOT EXISTS SevereEvents (
+        eventID INT AUTO_INCREMENT PRIMARY KEY,
+        zipCode VARCHAR(255),
+        event_type VARCHAR(255),
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (zipCode) REFERENCES zipCodes(zipCode)
         )
         """
-        cursor.execute(create_employee_tools_table)
+        cursor.execute(create_severe_events_table)
 
-        # Corrected the foreign key syntax and reference
-        create_employee_consumables_table = """
-        CREATE TABLE IF NOT EXISTS Employee_Consumables (
-        employeeID INT,
-        consumableID INT,
-        PRIMARY KEY (employeeID, consumableID),
-        FOREIGN KEY (employeeID) REFERENCES Employee(employeeID),
-        FOREIGN KEY (consumableID) REFERENCES Consumables(consumableID)
+# This table stores data about the API calls themselves, for tracking purposes.
+        create_api_logs_table = """CREATE TABLE IF NOT EXISTS ApiCallLogs (
+        logID INT AUTO_INCREMENT PRIMARY KEY,
+        zipCode VARCHAR(255),
+        status_code INT,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (zipCode) REFERENCES zipCodes(zipCode)
         )
         """
-        cursor.execute(create_employee_consumables_table)
+        cursor.execute(create_api_logs_table)
 
+# This table stores additional data from the API that you might not want to log every time.
+        create_forecasts_table = """
+        CREATE TABLE IF NOT EXISTS Forecasts (
+        forecastID INT AUTO_INCREMENT PRIMARY KEY,
+        zipCode VARCHAR(255),
+        forecast_type VARCHAR(255),
+        forecast_data JSON,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (zipCode) REFERENCES zipCodes(zipCode)
+        )
+        """
+        cursor.execute(create_forecasts_table)
         # Commit the changes to the database
         self.connection.commit()
+
     def read_query(self, query):
         cursor = self.connection.cursor()
         result = None

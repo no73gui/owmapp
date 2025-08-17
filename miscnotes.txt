@@ -1,0 +1,23 @@
+Establish a DB connection.
+Collect user input.
+Perform DB operations.
+Close the connection.
+
+IMPORTANT WINDOWS COMMANDS
+---
+.\venv\Scripts\activate
+
+py -m owmapp.main
+
+GIT ON WINDOWS
+---
+git --version
+
+ssh-keygen -t ed25519 -C "email@example.com"
+___if ed25519 is not supported, use rsa -b 4096
+
+git remote set-url origin git@github.com:your_username/owmapp.git
+__command should only be done in the root directory of the current project
+__changes origin remote
+__use SSH URL format git@github.com:username/reponame.git
+

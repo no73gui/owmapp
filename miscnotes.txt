@@ -5,9 +5,26 @@ Close the connection.
 
 IMPORTANT WINDOWS COMMANDS
 ---
+FLASK
+---
 .\venv\Scripts\activate
 
+Use only py -m to run. Must use cmd, cannot use VSCode
 py -m owmapp.main
+
+
+
+
+PICO (from owmapp\picowowmapp)
+---
+Write changes. Do not use BOOTSEL.
+mpremote fs cp main.py :
+
+Run it. 
+mpremote run main.py 
+
+
+
 
 GIT ON WINDOWS
 ---
@@ -20,4 +37,3 @@ git remote set-url origin git@github.com:your_username/owmapp.git
 __command should only be done in the root directory of the current project
 __changes origin remote
 __use SSH URL format git@github.com:username/reponame.git
-

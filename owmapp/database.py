@@ -100,3 +100,35 @@ class MySQLConnection:
         if self.connection and self.connection.is_connected():
             self.connection.close()
             print("MySQL Connection Closed")
+
+    def insert_zipcode(self, zip_code):
+        try:
+            cursor = self.connection.cursor()
+            query = "INSERT IGNORE INTO ZipCodes (zipCode) VALUES (%s)"
+            cursor.execute(query, (zip_code,))
+            self.connection.commit()
+            print(f"Zip code {zip_code} added or already exists.")
+            return True
+        except Error as e:
+            print("Error inserting zip code: {e}")
+            return False
+        finally:
+            if 'cursor' in locals() and cursor:
+                cursor.close()
+    def store_weather_data(self, zip_code, temperature, humidity, wind_speed):
+        try:
+            cursor = self.connection.cursor()
+            query = """INSERT INTO WeatherReadings
+            (zipCode, temperature, humidity, wind_speed)
+            VALUES (%s, %s, %s, %s)"""
+            data = (zip_code, temperature, humidity, wind_speed)
+            cursor.execute(query, data)
+            self.connection.commit()
+            print("Weather data inserted successfully!")
+            return True
+        except Error as err:
+            print(f"Error inserting weather data: {err}")
+            return False
+        finally:
+            if 'cursor' in locals() and cursor:
+                cursor.close()
